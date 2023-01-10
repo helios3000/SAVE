@@ -74,7 +74,7 @@ while i < len(data_heart):
 
     else:
         data_heart[i] = 0
-    print(data_heart[i])
+    # print(data_heart[i])
     i += 1
 
     if i > len(data_heart):
@@ -161,47 +161,47 @@ while k < len(e):
 
 
 # heart_ECMO delay 계산
-# i = 0
-# j = 0
-# k = 0
-# while 1:
-#     flag = 1
-#     if i >= len(data_heart):
-#         # print(b)
-#         break
-#
-#     if data_ecmo[i] == 1:
-#         j = i
-#
-#         while 1:
-#
-#             if j >= len(data_ecmo) or flag == 0:
-#                 break
-#
-#             if data_heart[j] == 1:
-#                 k = j + 1
-#
-#                 while 1:
-#
-#                     if k >= len(data_ecmo) or flag == 0:
-#                         break
-#
-#                     if data_ecmo[k] == 1:
-#
-#                         if (j - i) < round(3/10*(k - i)) or (k - j) < round(3/10*(k - i)):
-#                             flag = 0
-#                             # print("co-pulsation")
-#                             print(k - i)
-#                             i = k
-#                             break
-#                         else:
-#                             flag = 0
-#                             # print("counter-pulsation")
-#                             print(k - i)
-#                             i = k
-#                             break
-#                     k += 1
-#
-#             j += 1
-#
-#     i += 1
+i = 0
+j = 0
+k = 0
+while 1:
+    flag = 1
+    if i >= len(data_heart):
+        # print(b)
+        break
+
+    if data_ecmo[i] == 1:
+        j = i
+
+        while 1:
+
+            if j >= len(data_ecmo) or flag == 0:
+                break
+
+            if data_heart[j] == 1:
+                k = j + 1
+
+                while 1:
+
+                    if k >= len(data_ecmo) or flag == 0:
+                        break
+
+                    if data_ecmo[k] == 1:
+
+                        if (j - i) < round(3/10*(k - i)) or (k - j) < round(3/10*(k - i)):
+                            flag = 0
+                            print("co-pulsation")
+                            # print(k - i)
+                            i = k
+                            break
+                        else:
+                            flag = 0
+                            print("counter-pulsation")
+                            # print(k - i)
+                            i = k
+                            break
+                    k += 1
+
+            j += 1
+
+    i += 1
