@@ -1,6 +1,3 @@
-import datetime as dt
-import csv
-import pandas as pd
 import numpy as np
 
 
@@ -65,14 +62,12 @@ while i < len(data_sac2):
 i = 0
 
 while i < len(data_heart):
-    if data_heart[i] >= 10 and data_heart[i] > data_heart[i-1]:
-        data_heart[i-1] = 0
+    if data_heart[i] >= 5 and data_heart[i] > data_heart[i-1]:
         data_heart[i] = 1
         if data_heart[i] == data_heart[i-1]:
-            data_heart[i-1] = 0
-            data_heart[i] = 1
+            data_heart[i] = 0
 
-    else:
+    elif data_heart[i] < 10:
         data_heart[i] = 0
     # print(data_heart[i])
     i += 1
@@ -80,11 +75,12 @@ while i < len(data_heart):
     if i > len(data_heart):
         break
 
+
 # ecmo_ai 전처리 * (np.where)
 i = 0
 
 while i < len(data_ecmo):
-    if data_ecmo[i] >= 10 and data_ecmo[i] > data_ecmo[i-1]:
+    if data_ecmo[i] >= 5 and data_ecmo[i] > data_ecmo[i-1]:
         data_ecmo[i] = 1
         if data_ecmo[i] == data_ecmo[i-1]:
             data_ecmo[i] = 0
@@ -164,6 +160,7 @@ while k < len(e):
 i = 0
 j = 0
 k = 0
+print("")
 while 1:
     flag = 1
     if i >= len(data_heart):
@@ -194,14 +191,21 @@ while 1:
                             # print(k - i)
                             i = k
                             break
-                        else:
+                        elif (j - i) > round(3/10*(k - i)) or (k - j) > round(3/10*(k - i)):
                             flag = 0
                             print("counter-pulsation")
                             # print(k - i)
                             i = k
                             break
+
+                    print("")
                     k += 1
 
-            j += 1
+            if flag == 1:
+                print("")
+                j += 1
 
-    i += 1
+    if flag == 1:
+        print("")
+        i += 1
+
