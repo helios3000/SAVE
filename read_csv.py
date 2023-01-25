@@ -7,11 +7,11 @@ import serial
 import threading
 
 
-port = 'COM5'
-baud = 921600
-ser = serial.Serial(port, baud, timeout=0)
+# port = 'COM6'
+# baud = 921600
+# ser = serial.Serial(port, baud, timeout=0.1)
 
-data = np.loadtxt('C:/Users/HW/Desktop/ecmo_ai_apply_230105_a1_div0.csv', delimiter=',')
+data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230105_a1_div0.csv', delimiter=',')
 
 data_diff = np.array(data[10::, 0], dtype='float32')
 data_sac1 = np.array(data[10::, 1], dtype='float32')
@@ -66,16 +66,20 @@ i = 0
 proc_heart = np.array([])
 
 while 1:
-    if data_heart[i] >= 5 and data_heart[i] > data_heart[i-1]:
+    if data_heart[i] >= 5 and data_heart[i] > data_heart[i-1] and data_heart[i] > data_heart[i-2]:
         data_heart[i] = 1
-        if data_heart[i] == data_heart[i-1]:
+        if data_heart[i] == data_heart[i - 1]:
+            data_heart[i] = 0
+        if data_heart[i] == data_heart[i - 2]:
+            data_heart[i] = 0
+        if data_heart[i] == data_heart[i - 3]:
             data_heart[i] = 0
 
     elif data_heart[i] < 10:
         data_heart[i] = 0
 
-    # print(data_heart[i])
     proc_heart = np.append(proc_heart, data_heart[i])
+    # print(proc_heart[i])
 
     i += 1
 
@@ -90,16 +94,20 @@ i = 0
 proc_ecmo = np.array([])
 
 while i < len(data_ecmo):
-    if data_ecmo[i] >= 5 and data_ecmo[i] > data_ecmo[i-1]:
+    if data_ecmo[i] >= 5 and data_ecmo[i] > data_ecmo[i-1] and data_ecmo[i] > data_ecmo[i-2]:
         data_ecmo[i] = 1
-        if data_ecmo[i] == data_ecmo[i-1]:
+        if data_ecmo[i] == data_ecmo[i - 1]:
+            data_ecmo[i] = 0
+        if data_ecmo[i] == data_ecmo[i - 2]:
+            data_ecmo[i] = 0
+        if data_ecmo[i] == data_ecmo[i - 3]:
             data_ecmo[i] = 0
 
     elif data_ecmo[i] < 10:
         data_ecmo[i] = 0
 
-    # print(data_ecmo[i])
     proc_ecmo = np.append(proc_ecmo, data_ecmo[i])
+    # print(proc_ecmo[i])
 
     i += 1
 
@@ -168,30 +176,120 @@ while 1:
 #     if k >= len(e):
 #         break
 
-# heart_ECMO delay 계산, co/counter 판정
+# heart_ECMO delay 계산, co/counter 판정__Ver.0
+# i = 0
+# j = 0
+# k = 0
+# print("")
+#
+# while 1:
+#     flag = 1
+#     if i >= len(data_heart):
+#         # print(b)
+#         break
+#
+#     if proc_ecmo[i] == 1:
+#         j = i
+#
+#         while 1:
+#
+#             if j >= len(proc_ecmo) or flag == 0:
+#                 break
+#
+#             if proc_heart[j] == 1:
+#                 k = j + 1
+#
+#                 while 1:
+#
+#                     # bpm_str = str(b[i])
+#
+#                     data_serial_lead = "cp 60 1"
+#                     data_serial_lag = "cp 60 2"
+#
+#                     if k >= len(proc_ecmo) or flag == 0:
+#                         break
+#
+#                     if proc_ecmo[k] == 1:
+#
+#                         if (j - i) < round(3/10*(k - i)):
+#                             flag = 0
+#                             print("co-pulsation, lead")
+#                             # byte_lead = bytes(data_serial_lead, 'utf-8')
+#                             # ser.write(byte_lead)
+#                             # ser.write(b'cp 60 1')
+#                             # time.sleep(5)
+#
+#                             # print(k - i)
+#                             i = k
+#                             break
+#
+#                         elif round(7/10*(k - i)) < (j - i) <= (k - i):
+#                             flag = 0
+#                             print("co-pulsation, lag")
+#                             # byte_lag = bytes(data_serial_lag, 'utf-8')
+#                             # ser.write(byte_lag)
+#                             # ser.write(b'cp 60 2')
+#                             # time.sleep(5)
+#
+#                             # print(k - i)
+#                             i = k
+#                             break
+#
+#                         elif round(3/10*(k - i)) <= (j - i) <= round(7/10*(k - i)):
+#                             flag = 0
+#                             # print("counter-pulsation")
+#                             print("stay")
+#                             # print(k - i)
+#                             i = k
+#                             break
+#
+#                     print("")
+#                     k += 1
+#
+#             if flag == 1:
+#                 print("")
+#                 j += 1
+#
+#     if flag == 1:
+#         print("")
+#         i += 1
+
+
+
+# heart_ECMO delay 계산, co/counter 판정__Ver.1
 i = 0
 j = 0
 k = 0
-print("")
+l = 0
 
 while 1:
+
     flag = 1
-    if i >= len(data_heart):
+
+    if i >= len(proc_heart):
         # print(b)
         break
 
-    if proc_ecmo[i] == 1:
-        j = i
+    if proc_heart[i] == 1:
+
+        if i > j:
+            print("i", i)
+
+        j = i + 1
+        # flag_j = 0
 
         while 1:
 
-            if j >= len(proc_ecmo) or flag == 0:
+            if j >= len(proc_heart) or flag == 0:
                 break
 
             if proc_heart[j] == 1:
-                k = j + 1
+
+                k = j
 
                 while 1:
+
+                    # bpm_str = str(b[i])
 
                     data_serial_lead = "cp 60 1"
                     data_serial_lag = "cp 60 2"
@@ -201,50 +299,63 @@ while 1:
 
                     if proc_ecmo[k] == 1:
 
-                        if (j - i) < round(3/10*(k - i)):
+                        if (k - j) < round(3/10*(j - i)):
                             flag = 0
-                            print("co-pulsation, lead")
-                            byte_lead = bytes(data_serial_lead, 'utf-8')
-                            ser.write(byte_lead)
-                            time.sleep(1)
+
+                            print("co-pulsation, lead", k)
+                            # byte_lead = bytes(data_serial_lead, 'utf-8')
+                            # ser.write(byte_lead)
+                            # ser.write(b'cp 60 1')
+                            # time.sleep(5)
 
                             # print(k - i)
-                            i = k
+                            i = j
                             break
 
-                        elif (j - i) > round(7/10*(k - i)):
+                        elif round(7/10*(j - i)) < (k - j) <= round(99/100*(j - i)):
                             flag = 0
-                            print("co-pulsation, lag")
-                            byte_lag = bytes(data_serial_lag, 'utf-8')
-                            ser.write(byte_lag)
-                            time.sleep(1)
+
+                            print("co-pulsation, lag", k)
+                            # byte_lag = bytes(data_serial_lag, 'utf-8')
+                            # ser.write(byte_lag)
+                            # ser.write(b'cp 60 2')
+                            # time.sleep(5)
 
                             # print(k - i)
-                            i = k
+                            i = j
                             break
 
-                        elif round(3/10*(k - i)) <= (j - i) <= round(7/10*(k - i)):
+                        elif round(3/10*(j - i)) <= (k - j) <= round(7/10*(j - i)):
                             flag = 0
+
                             # print("counter-pulsation")
-                            print("stay")
+                            print("stay", k)
                             # print(k - i)
-                            i = k
+                            i = j
                             break
 
-                    print("")
-                    k += 1
+                        if k > j and proc_heart[k] == 1:
+                            flag = 0
+
+                            i = j
+                            break
+
+                    if flag == 1:
+                        print("k", k)
+                        k += 1
 
             if flag == 1:
-                print("")
+                if j > k:
+                    print("j", j)
                 j += 1
 
     if flag == 1:
-        print("")
+        print("i", i)
         i += 1
 
 
-# activate by heart signal
-
+## activate by heart signal
+#
 # i = 0
 # e_test = np.array([])
 # while 1:
@@ -280,7 +391,7 @@ while 1:
 #         i += 1
 
 
-"""-----------------------test-----------------------"""
+"""-----------------------test_sin-----------------------"""
 
 # i = 0
 # j = 0
