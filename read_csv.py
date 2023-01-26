@@ -271,16 +271,15 @@ while 1:
     flag = 1
 
     if i >= len(proc_heart):
-        # print(b)
+
         break
 
     if proc_heart[i] == 1:
 
         if i > j:
-            print("i", i)
+            print("")                                               # j = i + 1로 생략되는 i 출력
 
         j = i + 1
-        # flag_j = 0
 
         while 1:
 
@@ -289,11 +288,7 @@ while 1:
 
             if proc_heart[j] == 1:
 
-                if flag_j == 1:
-                    k = j
-                if flag_j == 0:
-                    k = j + 1
-                    flag_j = 1
+                k = j
 
                 while 1:
 
@@ -305,11 +300,11 @@ while 1:
                     if k >= len(proc_ecmo) or flag == 0:
                         break
 
-                    if k <= k_save:
-                        k += 1
+                    if k <= k_save:                                 # proc_ecmo[k]가 안찍혀있을 때
+                        k += 1                                      # empty 출력 후 k값 중복 출력 방지
 
-                    if k == k_save2:
-                        flag = 0
+                    if k == k_save2:                                # heart와 ecmo가 다시 합쳐지는 구간에서
+                        flag = 0                                    # proc_ecmo[k] == 1 중복 출력 방지
 
                         i = j
 
@@ -322,7 +317,7 @@ while 1:
                         if (k - j) < round(3/10*(j - i)):
                             flag = 0
 
-                            print("co-pulsation, lead", k)
+                            print("co-pulsation, lead")
                             # byte_lead = bytes(data_serial_lead, 'utf-8')
                             # ser.write(byte_lead)
                             # ser.write(b'cp 60 1')
@@ -336,7 +331,7 @@ while 1:
                         elif round(7/10*(j - i)) < (k - j) <= (j - i):
                             flag = 0
 
-                            print("co-pulsation, lag", k)
+                            print("co-pulsation, lag")
                             # byte_lag = bytes(data_serial_lag, 'utf-8')
                             # ser.write(byte_lag)
                             # ser.write(b'cp 60 2')
@@ -351,7 +346,7 @@ while 1:
                             flag = 0
 
                             # print("counter-pulsation")
-                            print("stay", k)
+                            print("stay")
                             # print(k - i)
                             i = j
 
@@ -360,22 +355,22 @@ while 1:
                     elif (j - i) < (k - j):
                         flag = 0
 
-                        print("empty", k)
+                        print("empty")
                         i = j
                         k_save = k
                         break
 
                     if flag == 1 and k_save < k:
-                        print("k", k)
+                        print("")
                         k += 1
 
             if flag == 1:
                 if j > k:
-                    print("j", j)
+                    print("")
                 j += 1
 
     if flag == 1:
-        print("i", i)
+        print("")
         i += 1
 
 
