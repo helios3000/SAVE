@@ -260,7 +260,11 @@ while 1:
 i = 0
 j = 0
 k = 0
-l = 0
+k_save = 0
+k_save2 = 0
+
+flag_j = 1
+
 
 while 1:
 
@@ -285,7 +289,11 @@ while 1:
 
             if proc_heart[j] == 1:
 
-                k = j
+                if flag_j == 1:
+                    k = j
+                if flag_j == 0:
+                    k = j + 1
+                    flag_j = 1
 
                 while 1:
 
@@ -297,7 +305,19 @@ while 1:
                     if k >= len(proc_ecmo) or flag == 0:
                         break
 
+                    if k <= k_save:
+                        k += 1
+
+                    if k == k_save2:
+                        flag = 0
+
+                        i = j
+
+                        break
+
                     if proc_ecmo[k] == 1:
+
+                        k_save2 = k
 
                         if (k - j) < round(3/10*(j - i)):
                             flag = 0
@@ -310,9 +330,10 @@ while 1:
 
                             # print(k - i)
                             i = j
+
                             break
 
-                        elif round(7/10*(j - i)) < (k - j) <= round(99/100*(j - i)):
+                        elif round(7/10*(j - i)) < (k - j) <= (j - i):
                             flag = 0
 
                             print("co-pulsation, lag", k)
@@ -323,6 +344,7 @@ while 1:
 
                             # print(k - i)
                             i = j
+
                             break
 
                         elif round(3/10*(j - i)) <= (k - j) <= round(7/10*(j - i)):
@@ -332,15 +354,18 @@ while 1:
                             print("stay", k)
                             # print(k - i)
                             i = j
+
                             break
 
-                        if k > j and proc_heart[k] == 1:
-                            flag = 0
+                    elif (j - i) < (k - j):
+                        flag = 0
 
-                            i = j
-                            break
+                        print("empty", k)
+                        i = j
+                        k_save = k
+                        break
 
-                    if flag == 1:
+                    if flag == 1 and k_save < k:
                         print("k", k)
                         k += 1
 
