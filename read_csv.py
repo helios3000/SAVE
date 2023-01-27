@@ -7,11 +7,14 @@ import serial
 import threading
 
 
-# port = 'COM6'
+port = 'COM4'
 # baud = 921600
-# ser = serial.Serial(port, baud, timeout=0.1)
+baud = 9600
+ser = serial.Serial(port, baud, timeout=0.1)
 
 data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230105_a1_div0.csv', delimiter=',')
+# data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230127_a2_div0.csv', delimiter=',')
+
 
 data_diff = np.array(data[10::, 0], dtype='float32')
 data_sac1 = np.array(data[10::, 1], dtype='float32')
@@ -270,6 +273,8 @@ while 1:
 
     flag = 1
 
+    var = 0
+
     if i >= len(proc_heart):
 
         break
@@ -323,6 +328,11 @@ while 1:
                             # ser.write(b'cp 60 1')
                             # time.sleep(5)
 
+                            # ser.write(b'a')
+
+                            ser.write('a'.encode())
+                            time.sleep(0.5)
+
                             # print(k - i)
                             i = j
 
@@ -337,6 +347,11 @@ while 1:
                             # ser.write(b'cp 60 2')
                             # time.sleep(5)
 
+                            # ser.write(b'b')
+
+                            ser.write('b'.encode())
+                            time.sleep(0.5)
+
                             # print(k - i)
                             i = j
 
@@ -347,6 +362,12 @@ while 1:
 
                             # print("counter-pulsation")
                             print("stay")
+
+                            # ser.write(b'c')
+
+                            ser.write('c'.encode())
+                            time.sleep(0.5)
+
                             # print(k - i)
                             i = j
 
@@ -372,7 +393,6 @@ while 1:
     if flag == 1:
         print("")
         i += 1
-
 
 ## activate by heart signal
 #
