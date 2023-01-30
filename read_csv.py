@@ -266,8 +266,9 @@ k = 0
 k_save = 0
 k_save2 = 0
 
-flag_j = 1
+flag_j = 0
 
+bpm_len = 0
 
 while 1:
 
@@ -291,7 +292,11 @@ while 1:
             if j >= len(proc_heart) or flag == 0:
                 break
 
-            if proc_heart[j] == 1:
+            if bpm_len > 0 and j > k_save2 and proc_heart[j] != 1 and proc_ecmo[j] == 1:       # heart 한 펄스에 ecmo가 두번 찍힐 때
+                print("co-pulsation, lag")
+                flag_j = 1
+
+            if proc_heart[j] == 1 and flag_j == 0:
 
                 k = j
 
@@ -305,11 +310,11 @@ while 1:
                     if k >= len(proc_ecmo) or flag == 0:
                         break
 
-                    if k <= k_save:                                 # proc_ecmo[k]가 안찍혀있을 때
-                        k += 1                                      # empty 출력 후 k값 중복 출력 방지
+                    if k <= k_save:                                     # proc_ecmo[k]가 안찍혀있을 때
+                        k += 1                                          # empty 출력 후 k값 중복 출력 방지
 
-                    if k == k_save2:                                # heart와 ecmo가 다시 합쳐지는 구간에서
-                        flag = 0                                    # proc_ecmo[k] == 1 중복 출력 방지
+                    if k == k_save2:                                    # heart와 ecmo가 다시 합쳐지는 구간에서
+                        flag = 0                                        # proc_ecmo[k] == 1 중복 출력 방지
 
                         i = j
 
@@ -330,10 +335,11 @@ while 1:
 
                             # ser.write(b'a')
 
-                            ser.write('a'.encode())
-                            time.sleep(0.5)
+                            # ser.write('a'.encode())
+                            # time.sleep(0.5)
 
                             # print(k - i)
+                            bpm_len = j - i
                             i = j
 
                             break
@@ -349,10 +355,11 @@ while 1:
 
                             # ser.write(b'b')
 
-                            ser.write('b'.encode())
-                            time.sleep(0.5)
+                            # ser.write('b'.encode())
+                            # time.sleep(0.5)
 
                             # print(k - i)
+                            bpm_len = j - i
                             i = j
 
                             break
@@ -365,15 +372,16 @@ while 1:
 
                             # ser.write(b'c')
 
-                            ser.write('c'.encode())
-                            time.sleep(0.5)
+                            # ser.write('c'.encode())
+                            # time.sleep(0.5)
 
                             # print(k - i)
+                            bpm_len = j - i
                             i = j
 
                             break
 
-                    elif (j - i) < (k - j):
+                    elif (j - i) < (k - j):                             # heart 한 펄스에 ecmo가 안찍힐 때
                         flag = 0
 
                         print("empty")
@@ -386,8 +394,9 @@ while 1:
                         k += 1
 
             if flag == 1:
-                if j > k:
+                if j > k and flag_j == 0:
                     print("")
+                flag_j = 0
                 j += 1
 
     if flag == 1:
