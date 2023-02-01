@@ -70,13 +70,17 @@ i = 0
 proc_heart = np.array([])
 
 while 1:
-    if data_heart[i] >= 5 and data_heart[i] > data_heart[i-1] and data_heart[i] > data_heart[i-2]:
+    if data_heart[i] >= 5:
         data_heart[i] = 1
         if data_heart[i] == data_heart[i - 1]:
             data_heart[i] = 0
         if data_heart[i] == data_heart[i - 2]:
             data_heart[i] = 0
         if data_heart[i] == data_heart[i - 3]:
+            data_heart[i] = 0
+        if data_heart[i] == data_heart[i - 4]:
+            data_heart[i] = 0
+        if data_heart[i] == data_heart[i - 5]:
             data_heart[i] = 0
 
     elif data_heart[i] < 10:
@@ -98,13 +102,17 @@ i = 0
 proc_ecmo = np.array([])
 
 while i < len(data_ecmo):
-    if data_ecmo[i] >= 5 and data_ecmo[i] > data_ecmo[i-1] and data_ecmo[i] > data_ecmo[i-2]:
+    if data_ecmo[i] >= 5:
         data_ecmo[i] = 1
         if data_ecmo[i] == data_ecmo[i - 1]:
             data_ecmo[i] = 0
         if data_ecmo[i] == data_ecmo[i - 2]:
             data_ecmo[i] = 0
         if data_ecmo[i] == data_ecmo[i - 3]:
+            data_ecmo[i] = 0
+        if data_ecmo[i] == data_ecmo[i - 4]:
+            data_ecmo[i] = 0
+        if data_ecmo[i] == data_ecmo[i - 5]:
             data_ecmo[i] = 0
 
     elif data_ecmo[i] < 10:
@@ -259,150 +267,156 @@ while 1:
 #         i += 1
 
 
-
 # heart_ECMO delay 계산, co/counter 판정__Ver.1
-i = 0
-j = 0
-k = 0
-k_save = 0
-k_save2 = 0
 
-flag_j = 0
+def counter_decision():
 
-bpm_len = 0
+    i = 0
+    j = 0
+    k = 0
+    k_save = 0
+    k_save2 = 0
 
-while 1:
+    flag_j = 0
 
-    flag = 1
+    bpm_len = 0
 
-    var = 0
+    while 1:
 
-    if i >= len(proc_heart):
+        flag = 1
 
-        break
+        var = 0
 
-    if proc_heart[i] == 1:
+        if i >= len(proc_heart):
 
-        if i > j:
-            print("")                                               # j = i + 1로 생략되는 i 출력
+            break
 
-        j = i + 1
+        if proc_heart[i] == 1:
 
-        while 1:
+            if i > j:
+                print("")                                               # j = i + 1로 생략되는 i 출력
 
-            if j >= len(proc_heart) or flag == 0:
-                break
+            j = i + 1
 
-            if bpm_len > 0 and j > k_save2 and proc_heart[j] != 1 and proc_ecmo[j] == 1:       # heart 한 펄스에 ecmo가 두번 찍힐 때
-                print("co-pulsation, lag")
-                flag_j = 1
+            while 1:
 
-            if proc_heart[j] == 1 and flag_j == 0:
+                if j >= len(proc_heart) or flag == 0:
+                    break
 
-                k = j
+                if bpm_len > 0 and j > k_save2 and proc_heart[j] != 1 and proc_ecmo[j] == 1:       # heart 한 펄스에 ecmo가 두번 찍힐 때
+                    print("co-pulsation, lag")
+                    flag_j = 1
 
-                while 1:
+                if proc_heart[j] == 1 and flag_j == 0:
 
-                    # bpm_str = str(b[i])
+                    k = j
 
-                    data_serial_lead = "cp 60 1"
-                    data_serial_lag = "cp 60 2"
+                    while 1:
 
-                    if k >= len(proc_ecmo) or flag == 0:
-                        break
+                        # bpm_str = str(b[i])
 
-                    if k <= k_save:                                     # proc_ecmo[k]가 안찍혀있을 때
-                        k += 1                                          # empty 출력 후 k값 중복 출력 방지
+                        # data_serial_lead = "cp 60 1"
+                        # data_serial_lag = "cp 60 2"
 
-                    if k <= k_save2:                                    # heart와 ecmo가 다시 합쳐지는 구간에서
-                        flag = 0                                        # proc_ecmo[k] == 1 중복 출력 방지
+                        if k >= len(proc_ecmo) or flag == 0:
+                            break
 
-                        i = j
+                        if k <= k_save:                                     # proc_ecmo[k]가 안찍혀있을 때
+                            k += 1                                          # empty 출력 후 k값 중복 출력 방지
 
-                        break
+                        if k <= k_save2:                                    # heart와 ecmo가 다시 합쳐지는 구간에서
+                            flag = 0                                        # proc_ecmo[k] == 1 중복 출력 방지
 
-                    if proc_ecmo[k] == 1:
-
-                        k_save2 = k
-
-                        if (k - j) < round(3/10*(j - i)):
-                            flag = 0
-
-                            print("co-pulsation, lead")
-                            # byte_lead = bytes(data_serial_lead, 'utf-8')
-                            # ser.write(byte_lead)
-                            # ser.write(b'cp 60 1')
-                            # time.sleep(5)
-
-                            # ser.write(b'a')
-
-                            ser.write('60 1'.encode())                     # 아두이노 시리얼통신 테스트
-                            time.sleep(0.5)
-
-                            # print(k - i)
-                            bpm_len = j - i
                             i = j
 
                             break
 
-                        elif round(7/10*(j - i)) < (k - j) <= (j - i):
+                        if proc_ecmo[k] == 1:
+
+                            k_save2 = k
+
+                            if (k - j) < round(3/10*(j - i)):
+                                flag = 0
+                                bpm_len = j - i
+
+                                print("co-pulsation, lead")
+                                # byte_lead = bytes(data_serial_lead, 'utf-8')
+                                # ser.write(byte_lead)
+                                # ser.write(b'cp 60 1')
+                                # time.sleep(5)
+
+                                # ser.write(b'a')
+
+                                ser.write('60 1'.encode())                     # 아두이노 시리얼통신 테스트
+                                time.sleep(0.5)
+                                # print(k - i)
+
+                                i = j
+
+                                break
+
+                            elif round(7/10*(j - i)) < (k - j) <= (j - i):
+                                flag = 0
+                                bpm_len = j - i
+
+                                print("co-pulsation, lag")
+                                # byte_lag = bytes(data_serial_lag, 'utf-8')
+                                # ser.write(byte_lag)
+                                # ser.write(b'cp 60 2')
+                                # time.sleep(5)
+
+                                # ser.write(b'b')
+
+                                ser.write('60 2'.encode())                     # 아두이노 시리얼통신 테스트
+                                time.sleep(0.5)
+
+                                # print(k - i)
+                                i = j
+
+                                break
+
+                            elif round(3/10*(j - i)) <= (k - j) <= round(7/10*(j - i)):
+                                flag = 0
+                                bpm_len = j - i
+
+                                # print("counter-pulsation")
+                                print("stay")
+
+                                # ser.write(b'c')
+
+                                ser.write('60 3'.encode())                     # 아두이노 시리얼통신 테스트
+                                time.sleep(0.5)
+
+                                # print(k - i)
+                                i = j
+
+                                break
+
+                        elif (j - i) <= (k - j):                             # heart 한 펄스에 ecmo가 안찍힐 때
                             flag = 0
 
-                            print("co-pulsation, lag")
-                            # byte_lag = bytes(data_serial_lag, 'utf-8')
-                            # ser.write(byte_lag)
-                            # ser.write(b'cp 60 2')
-                            # time.sleep(5)
-
-                            # ser.write(b'b')
-
-                            ser.write('60 2'.encode())                     # 아두이노 시리얼통신 테스트
-                            time.sleep(0.5)
-
-                            # print(k - i)
-                            bpm_len = j - i
+                            print("empty")
                             i = j
-
+                            k_save = k
                             break
 
-                        elif round(3/10*(j - i)) <= (k - j) <= round(7/10*(j - i)):
-                            flag = 0
+                        if flag == 1 and k_save < k:
+                            print("")
+                            k += 1
 
-                            # print("counter-pulsation")
-                            print("stay")
+                if flag == 1:
+                    if j > k and j > k_save2 and flag_j == 0:                # j > k_save2를 추가
+                        print("")                                            # heart 한 펄스에 ecmo가 안찍힐 때
+                    flag_j = 0                                               # ecmo beat가 밀려있는 경우 밀린 만큼 j 스킵
+                    j += 1
 
-                            # ser.write(b'c')
+        if flag == 1:
+            print("")
+            i += 1
 
-                            ser.write('60 3'.encode())                     # 아두이노 시리얼통신 테스트
-                            time.sleep(0.5)
 
-                            # print(k - i)
-                            bpm_len = j - i
-                            i = j
+counter_decision()
 
-                            break
-
-                    elif (j - i) <= (k - j):                             # heart 한 펄스에 ecmo가 안찍힐 때
-                        flag = 0
-
-                        print("empty")
-                        i = j
-                        k_save = k
-                        break
-
-                    if flag == 1 and k_save < k:
-                        print("")
-                        k += 1
-
-            if flag == 1:
-                if j > k and j > k_save2 and flag_j == 0:
-                    print("")
-                flag_j = 0
-                j += 1
-
-    if flag == 1:
-        print("")
-        i += 1
 
 # activate by heart signal
 #
