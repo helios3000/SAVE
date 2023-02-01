@@ -8,12 +8,13 @@ import threading
 
 
 port = 'COM4'
-# baud = 921600
-baud = 9600
+# baud = 921600                                                         # STM32
+baud = 9600                                                             # 아두이노
 ser = serial.Serial(port, baud, timeout=0.1)
 
-data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230105_a1_div0.csv', delimiter=',')
+# data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230105_a1_div0.csv', delimiter=',')
 # data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230127_a2_div0.csv', delimiter=',')
+data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230130_a3_div0.csv', delimiter=',')
 
 
 data_diff = np.array(data[10::, 0], dtype='float32')
@@ -313,7 +314,7 @@ while 1:
                     if k <= k_save:                                     # proc_ecmo[k]가 안찍혀있을 때
                         k += 1                                          # empty 출력 후 k값 중복 출력 방지
 
-                    if k == k_save2:                                    # heart와 ecmo가 다시 합쳐지는 구간에서
+                    if k <= k_save2:                                    # heart와 ecmo가 다시 합쳐지는 구간에서
                         flag = 0                                        # proc_ecmo[k] == 1 중복 출력 방지
 
                         i = j
@@ -335,8 +336,8 @@ while 1:
 
                             # ser.write(b'a')
 
-                            # ser.write('a'.encode())
-                            # time.sleep(0.5)
+                            ser.write('60 1'.encode())                     # 아두이노 시리얼통신 테스트
+                            time.sleep(0.5)
 
                             # print(k - i)
                             bpm_len = j - i
@@ -355,8 +356,8 @@ while 1:
 
                             # ser.write(b'b')
 
-                            # ser.write('b'.encode())
-                            # time.sleep(0.5)
+                            ser.write('60 2'.encode())                     # 아두이노 시리얼통신 테스트
+                            time.sleep(0.5)
 
                             # print(k - i)
                             bpm_len = j - i
@@ -372,8 +373,8 @@ while 1:
 
                             # ser.write(b'c')
 
-                            # ser.write('c'.encode())
-                            # time.sleep(0.5)
+                            ser.write('60 3'.encode())                     # 아두이노 시리얼통신 테스트
+                            time.sleep(0.5)
 
                             # print(k - i)
                             bpm_len = j - i
@@ -381,7 +382,7 @@ while 1:
 
                             break
 
-                    elif (j - i) < (k - j):                             # heart 한 펄스에 ecmo가 안찍힐 때
+                    elif (j - i) <= (k - j):                             # heart 한 펄스에 ecmo가 안찍힐 때
                         flag = 0
 
                         print("empty")
@@ -394,7 +395,7 @@ while 1:
                         k += 1
 
             if flag == 1:
-                if j > k and flag_j == 0:
+                if j > k and j > k_save2 and flag_j == 0:
                     print("")
                 flag_j = 0
                 j += 1
@@ -403,7 +404,7 @@ while 1:
         print("")
         i += 1
 
-## activate by heart signal
+# activate by heart signal
 #
 # i = 0
 # e_test = np.array([])
