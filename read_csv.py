@@ -8,12 +8,13 @@ import threading
 
 
 port = 'COM4'
-# baud = 921600
-baud = 9600
+# baud = 921600                                                         # STM32
+baud = 9600                                                             # 아두이노
 ser = serial.Serial(port, baud, timeout=0.1)
 
-data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230105_a1_div0.csv', delimiter=',')
+# data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230105_a1_div0.csv', delimiter=',')
 # data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230127_a2_div0.csv', delimiter=',')
+data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230130_a3_div0.csv', delimiter=',')
 
 
 data_diff = np.array(data[10::, 0], dtype='float32')
@@ -21,6 +22,9 @@ data_sac1 = np.array(data[10::, 1], dtype='float32')
 data_sac2 = np.array(data[10::, 2], dtype='float32')
 data_heart = np.array(data[10::, 3], dtype='float32')
 data_ecmo = np.array(data[10::, 4], dtype='float32')
+
+
+
 
 
 # sac1 전처리
@@ -69,13 +73,17 @@ i = 0
 proc_heart = np.array([])
 
 while 1:
-    if data_heart[i] >= 5 and data_heart[i] > data_heart[i-1] and data_heart[i] > data_heart[i-2]:
+    if data_heart[i] >= 5:
         data_heart[i] = 1
         if data_heart[i] == data_heart[i - 1]:
             data_heart[i] = 0
         if data_heart[i] == data_heart[i - 2]:
             data_heart[i] = 0
         if data_heart[i] == data_heart[i - 3]:
+            data_heart[i] = 0
+        if data_heart[i] == data_heart[i - 4]:
+            data_heart[i] = 0
+        if data_heart[i] == data_heart[i - 5]:
             data_heart[i] = 0
 
     elif data_heart[i] < 10:
@@ -89,21 +97,23 @@ while 1:
     if i >= len(data_heart):
         break
 
-
-
 # ecmo_ai 전처리 * (np.where)
 
 i = 0
 proc_ecmo = np.array([])
 
 while i < len(data_ecmo):
-    if data_ecmo[i] >= 5 and data_ecmo[i] > data_ecmo[i-1] and data_ecmo[i] > data_ecmo[i-2]:
+    if data_ecmo[i] >= 5:
         data_ecmo[i] = 1
         if data_ecmo[i] == data_ecmo[i - 1]:
             data_ecmo[i] = 0
         if data_ecmo[i] == data_ecmo[i - 2]:
             data_ecmo[i] = 0
         if data_ecmo[i] == data_ecmo[i - 3]:
+            data_ecmo[i] = 0
+        if data_ecmo[i] == data_ecmo[i - 4]:
+            data_ecmo[i] = 0
+        if data_ecmo[i] == data_ecmo[i - 5]:
             data_ecmo[i] = 0
 
     elif data_ecmo[i] < 10:
@@ -117,28 +127,29 @@ while i < len(data_ecmo):
     if i >= len(data_ecmo):
         break
 
+
 # Heart BPM 계산
 
-i = 0
-b = np.array([])
-while 1:
-
-    if i >= len(proc_heart):
-        # print(b)
-        break
-
-    if proc_heart[i] == 1:
-        j = i + 1
-        while 1:
-
-            if j >= len(proc_heart):
-                break
-
-            if proc_heart[j] == 1:
-                b = np.append(b, 60/((j-i)*0.016))
-                break
-            j += 1
-    i += 1
+# i = 0
+# b = np.array([])
+# while 1:
+#
+#     if i >= len(proc_heart):
+#         # print(b)
+#         break
+#
+#     if proc_heart[i] == 1:
+#         j = i + 1
+#         while 1:
+#
+#             if j >= len(proc_heart):
+#                 break
+#
+#             if proc_heart[j] == 1:
+#                 b = np.append(b, 60/((j-i)*0.016))
+#                 break
+#             j += 1
+#     i += 1
 
 # Heart bpm 출력 test
 # k = 0
@@ -150,26 +161,26 @@ while 1:
 
 # ECMO BPM 계산
 
-i = 0
-e = np.array([])
-while 1:
-
-    if i >= len(proc_ecmo):
-        # print(e)
-        break
-
-    if proc_ecmo[i] == 1:
-        j = i + 1
-        while 1:
-
-            if j >= len(proc_ecmo):
-                break
-
-            if proc_ecmo[j] == 1:
-                e = np.append(e, 60/((j-i)*0.016))
-                break
-            j += 1
-    i += 1
+# i = 0
+# e = np.array([])
+# while 1:
+#
+#     if i >= len(proc_ecmo):
+#         # print(e)
+#         break
+#
+#     if proc_ecmo[i] == 1:
+#         j = i + 1
+#         while 1:
+#
+#             if j >= len(proc_ecmo):
+#                 break
+#
+#             if proc_ecmo[j] == 1:
+#                 e = np.append(e, 60/((j-i)*0.016))
+#                 break
+#             j += 1
+#     i += 1
 
 # ECMO bpm 출력 test
 # k = 0
@@ -179,87 +190,10 @@ while 1:
 #     if k >= len(e):
 #         break
 
-# heart_ECMO delay 계산, co/counter 판정__Ver.0
-# i = 0
-# j = 0
-# k = 0
-# print("")
-#
-# while 1:
-#     flag = 1
-#     if i >= len(data_heart):
-#         # print(b)
-#         break
-#
-#     if proc_ecmo[i] == 1:
-#         j = i
-#
-#         while 1:
-#
-#             if j >= len(proc_ecmo) or flag == 0:
-#                 break
-#
-#             if proc_heart[j] == 1:
-#                 k = j + 1
-#
-#                 while 1:
-#
-#                     # bpm_str = str(b[i])
-#
-#                     data_serial_lead = "cp 60 1"
-#                     data_serial_lag = "cp 60 2"
-#
-#                     if k >= len(proc_ecmo) or flag == 0:
-#                         break
-#
-#                     if proc_ecmo[k] == 1:
-#
-#                         if (j - i) < round(3/10*(k - i)):
-#                             flag = 0
-#                             print("co-pulsation, lead")
-#                             # byte_lead = bytes(data_serial_lead, 'utf-8')
-#                             # ser.write(byte_lead)
-#                             # ser.write(b'cp 60 1')
-#                             # time.sleep(5)
-#
-#                             # print(k - i)
-#                             i = k
-#                             break
-#
-#                         elif round(7/10*(k - i)) < (j - i) <= (k - i):
-#                             flag = 0
-#                             print("co-pulsation, lag")
-#                             # byte_lag = bytes(data_serial_lag, 'utf-8')
-#                             # ser.write(byte_lag)
-#                             # ser.write(b'cp 60 2')
-#                             # time.sleep(5)
-#
-#                             # print(k - i)
-#                             i = k
-#                             break
-#
-#                         elif round(3/10*(k - i)) <= (j - i) <= round(7/10*(k - i)):
-#                             flag = 0
-#                             # print("counter-pulsation")
-#                             print("stay")
-#                             # print(k - i)
-#                             i = k
-#                             break
-#
-#                     print("")
-#                     k += 1
-#
-#             if flag == 1:
-#                 print("")
-#                 j += 1
-#
-#     if flag == 1:
-#         print("")
-#         i += 1
-
-
 
 # heart_ECMO delay 계산, co/counter 판정__Ver.1
+
+
 i = 0
 j = 0
 k = 0
@@ -304,8 +238,8 @@ while 1:
 
                     # bpm_str = str(b[i])
 
-                    data_serial_lead = "cp 60 1"
-                    data_serial_lag = "cp 60 2"
+                    # data_serial_lead = "cp 60 1"
+                    # data_serial_lag = "cp 60 2"
 
                     if k >= len(proc_ecmo) or flag == 0:
                         break
@@ -313,7 +247,7 @@ while 1:
                     if k <= k_save:                                     # proc_ecmo[k]가 안찍혀있을 때
                         k += 1                                          # empty 출력 후 k값 중복 출력 방지
 
-                    if k == k_save2:                                    # heart와 ecmo가 다시 합쳐지는 구간에서
+                    if k <= k_save2:                                    # heart와 ecmo가 다시 합쳐지는 구간에서
                         flag = 0                                        # proc_ecmo[k] == 1 중복 출력 방지
 
                         i = j
@@ -326,8 +260,9 @@ while 1:
 
                         if (k - j) < round(3/10*(j - i)):
                             flag = 0
+                            h_bpm = round(60/((j - i)*0.016))
 
-                            print("co-pulsation, lead")
+                            print("co-pulsation_lead", h_bpm)
                             # byte_lead = bytes(data_serial_lead, 'utf-8')
                             # ser.write(byte_lead)
                             # ser.write(b'cp 60 1')
@@ -335,19 +270,21 @@ while 1:
 
                             # ser.write(b'a')
 
-                            # ser.write('a'.encode())
-                            # time.sleep(0.5)
-
+                            ser.write(str(h_bpm).encode())
+                            time.sleep(0.3)
+                            ser.write("a".encode())                     # 아두이노 시리얼통신 테스트
+                            time.sleep(0.3)
                             # print(k - i)
-                            bpm_len = j - i
+
                             i = j
 
                             break
 
                         elif round(7/10*(j - i)) < (k - j) <= (j - i):
                             flag = 0
+                            h_bpm = round(60/((j - i)*0.016))
 
-                            print("co-pulsation, lag")
+                            print("co-pulsation_lag", h_bpm)
                             # byte_lag = bytes(data_serial_lag, 'utf-8')
                             # ser.write(byte_lag)
                             # ser.write(b'cp 60 2')
@@ -355,33 +292,36 @@ while 1:
 
                             # ser.write(b'b')
 
-                            # ser.write('b'.encode())
-                            # time.sleep(0.5)
+                            ser.write(str(h_bpm).encode())
+                            time.sleep(0.3)
+                            ser.write("b".encode())                     # 아두이노 시리얼통신 테스트
+                            time.sleep(0.3)
 
                             # print(k - i)
-                            bpm_len = j - i
                             i = j
 
                             break
 
                         elif round(3/10*(j - i)) <= (k - j) <= round(7/10*(j - i)):
                             flag = 0
+                            h_bpm = round(60/((j - i)*0.016))
 
                             # print("counter-pulsation")
-                            print("stay")
+                            print("stay", h_bpm)
 
                             # ser.write(b'c')
 
-                            # ser.write('c'.encode())
-                            # time.sleep(0.5)
+                            ser.write(str(h_bpm).encode())
+                            time.sleep(0.3)
+                            ser.write("c".encode())                     # 아두이노 시리얼통신 테스트
+                            time.sleep(0.3)
 
                             # print(k - i)
-                            bpm_len = j - i
                             i = j
 
                             break
 
-                    elif (j - i) < (k - j):                             # heart 한 펄스에 ecmo가 안찍힐 때
+                    elif (j - i) <= (k - j):                             # heart 한 펄스에 ecmo가 안찍힐 때
                         flag = 0
 
                         print("empty")
@@ -394,16 +334,18 @@ while 1:
                         k += 1
 
             if flag == 1:
-                if j > k and flag_j == 0:
-                    print("")
-                flag_j = 0
+                if j > k and j > k_save2 and flag_j == 0:                # j > k_save2를 추가
+                    print("")                                            # heart 한 펄스에 ecmo가 안찍힐 때
+                flag_j = 0                                               # ecmo beat가 밀려있는 경우 밀린 만큼 j 스킵
                 j += 1
 
     if flag == 1:
         print("")
         i += 1
 
-## activate by heart signal
+
+
+# activate by heart signal
 #
 # i = 0
 # e_test = np.array([])
