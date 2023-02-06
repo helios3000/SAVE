@@ -102,7 +102,7 @@ while 1:
 i = 0
 proc_ecmo = np.array([])
 
-while i < len(data_ecmo):
+while 1:
     if data_ecmo[i] >= 5:
         data_ecmo[i] = 1
         if data_ecmo[i] == data_ecmo[i - 1]:
@@ -271,8 +271,10 @@ while 1:
                             # ser.write(b'a')
 
                             ser.write(str(h_bpm).encode())
+                            ser.write('\n'.encode())
                             time.sleep(0.3)
-                            ser.write("a".encode())                     # 아두이노 시리얼통신 테스트
+                            # ser.write('a'.encode())                     # 아두이노 시리얼통신 테스트
+                            ser.write('10\n'.encode())
                             time.sleep(0.3)
                             # print(k - i)
 
@@ -293,8 +295,10 @@ while 1:
                             # ser.write(b'b')
 
                             ser.write(str(h_bpm).encode())
+                            ser.write('\n'.encode())
                             time.sleep(0.3)
-                            ser.write("b".encode())                     # 아두이노 시리얼통신 테스트
+                            # ser.write('b'.encode())                     # 아두이노 시리얼통신 테스트
+                            ser.write('20\n'.encode())
                             time.sleep(0.3)
 
                             # print(k - i)
@@ -312,8 +316,10 @@ while 1:
                             # ser.write(b'c')
 
                             ser.write(str(h_bpm).encode())
+                            ser.write('\n'.encode())
                             time.sleep(0.3)
-                            ser.write("c".encode())                     # 아두이노 시리얼통신 테스트
+                            # ser.write('c'.encode())                     # 아두이노 시리얼통신 테스트
+                            ser.write('30\n'.encode())
                             time.sleep(0.3)
 
                             # print(k - i)
