@@ -1,31 +1,29 @@
-import threading
-
 import numpy as np
 import math
 import time
 import serial
 import threading
 
-
-port = 'COM4'
+port_ibp = 'COM4'
 # baud = 921600                                                         # STM32
-baud = 9600                                                             # 아두이노
-ser = serial.Serial(port, baud, timeout=0.1)
+baud_ibp = 9600  # 아두이노
+ser_ibp = serial.Serial(port_ibp, baud_ibp, timeout=0.1)
+
+
+# port = 'COM5'
+# baudrate = 115200
+# ser = serial.Serial(port, baudrate)
+
 
 # data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230105_a1_div0.csv', delimiter=',')
 # data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230127_a2_div0.csv', delimiter=',')
 data = np.loadtxt('C:/Users/user/Desktop/ecmo_ai_apply_230130_a3_div0.csv', delimiter=',')
-
 
 data_diff = np.array(data[10::, 0], dtype='float32')
 data_sac1 = np.array(data[10::, 1], dtype='float32')
 data_sac2 = np.array(data[10::, 2], dtype='float32')
 data_heart = np.array(data[10::, 3], dtype='float32')
 data_ecmo = np.array(data[10::, 4], dtype='float32')
-
-
-
-
 
 # sac1 전처리
 
@@ -270,11 +268,11 @@ while 1:
 
                             # ser.write(b'a')
 
-                            ser.write(str(h_bpm).encode())
-                            ser.write('\n'.encode())
+                            ser_ibp.write(str(h_bpm).encode())
+                            ser_ibp.write('\n'.encode())
                             time.sleep(0.3)
                             # ser.write('a'.encode())                     # 아두이노 시리얼통신 테스트
-                            ser.write('10\n'.encode())
+                            ser_ibp.write('10\n'.encode())
                             time.sleep(0.3)
                             # print(k - i)
 
@@ -294,11 +292,11 @@ while 1:
 
                             # ser.write(b'b')
 
-                            ser.write(str(h_bpm).encode())
-                            ser.write('\n'.encode())
+                            ser_ibp.write(str(h_bpm).encode())
+                            ser_ibp.write('\n'.encode())
                             time.sleep(0.3)
                             # ser.write('b'.encode())                     # 아두이노 시리얼통신 테스트
-                            ser.write('20\n'.encode())
+                            ser_ibp.write('20\n'.encode())
                             time.sleep(0.3)
 
                             # print(k - i)
@@ -315,11 +313,11 @@ while 1:
 
                             # ser.write(b'c')
 
-                            ser.write(str(h_bpm).encode())
-                            ser.write('\n'.encode())
+                            ser_ibp.write(str(h_bpm).encode())
+                            ser_ibp.write('\n'.encode())
                             time.sleep(0.3)
                             # ser.write('c'.encode())                     # 아두이노 시리얼통신 테스트
-                            ser.write('30\n'.encode())
+                            ser_ibp.write('30\n'.encode())
                             time.sleep(0.3)
 
                             # print(k - i)
@@ -458,7 +456,3 @@ while 1:
 #
 #     if j >= hbpm_init:
 #         j = 0
-
-
-
-
